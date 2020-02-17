@@ -1,9 +1,10 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import "./App.css";
 
 function Entry ({ entry, index, removeEntry, completeEntry }) {
+  
   return (
-    <div className="entry">
+      <div className="entry">
       <div>
         <b>Name:</b>
         {entry.name} , <br/>
@@ -71,19 +72,24 @@ function EntryForm({ addEntry }) {
 }
 
 function App() {
-  const [entries, setEntries] = useState([
-    {
-      name: "First Name",
-      description: "Some text",
-      comment: "some comment",
-      isCompleted: false
-    }
-  ]);
+ 
+  
+  function tolocal (newEntries) {
+  
+    let savechats = JSON.stringify(newEntries);
+    localStorage.setItem("list", savechats);
+  }
+  
+  const [entries, setEntries] = useState([{
+    name: "Example",
+    description: "Example"
+  }]);
 
   const addEntry = (name, description, comment) => {
     if (!comment) comment = "No comments were left about his entry";
     const newEntries = [...entries, { name, description, comment }];
     setEntries(newEntries);
+    tolocal(newEntries);
   };
 
 
@@ -91,14 +97,23 @@ function App() {
     const newEntries = [...entries];
     newEntries[index].isCompleted = true;
     setEntries(newEntries);
+    tolocal(newEntries);
   };
 
   const removeEntry = index => {
     const newEntries = [...entries];
     newEntries.splice(index, 1);
     setEntries(newEntries);
+    tolocal(newEntries);
   };
-
+  
+  useEffect(() => {
+  let check = localStorage.getItem("list");
+  if (check!=null) {
+  check = JSON.parse(check);
+  setEntries(check);}
+  }, []  ); 
+  
   return (
     <div className="app">
       <div> <EntryForm addEntry={addEntry} /> </div>
